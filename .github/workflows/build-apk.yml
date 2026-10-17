@@ -1,4 +1,3 @@
-
 name: Build Android APK
 
 on:
@@ -14,34 +13,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract project ZIP
-        run: |
-          unzip -o WheelOfFortune-Ready.zip -d project
-          find project -maxdepth 3 -type f | head -80
-
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
+      - name: Extract project ZIP
+        run: |
+          unzip -o WheelOfFortune-Ready.zip -d project
+          ls -la project/WheelOfFortune
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
 
       - name: Build APK
         run: |
-          cd project
-          if [ -f gradlew ]; then
-            chmod +x gradlew
-            ./gradlew assembleDebug
-          else
-            echo "Gradle wrapper not found"
-            exit 1
-          fi
+          cd project/WheelOfFortune
+          gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: WheelOfFortune-APK
-          path: project/**/build/outputs/apk/debug/*.apk
+          path: project/WheelOfFortune/app/build/outputs/apk/debug/*.apk
           
